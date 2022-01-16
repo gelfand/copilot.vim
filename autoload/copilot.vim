@@ -308,7 +308,6 @@ endfunction
 
 function! s:ClearPreview() abort
   if exists('*nvim_buf_del_extmark')
-    call nvim_buf_del_extmark(0, copilot#NvimNs(), 1)
   endif
 endfunction
 
@@ -331,8 +330,6 @@ function! s:UpdatePreview() abort
     if len(text) > 1
       let data.virt_lines = map(text[1:-1], { _, l -> [[l, s:hlgroup]] })
     endif
-    call nvim_buf_del_extmark(0, copilot#NvimNs(), 1)
-    call nvim_buf_set_extmark(0, copilot#NvimNs(), line('.')-1, col('.')-1, data)
   catch
     return copilot#logger#Exception()
   endtry
