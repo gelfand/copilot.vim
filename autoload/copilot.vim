@@ -249,11 +249,11 @@ function! copilot#Complete(...) abort
   endif
   let params = copilot#doc#Params()
   if !exists('b:_copilot.params') || b:_copilot.params !=# params
-    let b:_copilot = {'params': params, 'first':
-          \ copilot#Request('getCompletions', params)}
+    let b:_copilot = {'params': params, 'cycling':
+          \ copilot#Request('getCompletionsCycling', params)}
     let g:_copilot_last = b:_copilot
   endif
-  let completion = b:_copilot.first
+  let completion = b:_copilot.cycling
   if !a:0
     return completion.Await()
   else
@@ -410,7 +410,6 @@ endfunction
 
 function! s:ClearPreview() abort
   if exists('*nvim_buf_del_extmark')
-    call nvim_buf_del_extmark(0, copilot#NvimNs(), 1)
   endif
 endfunction
 
@@ -444,8 +443,6 @@ function! s:UpdatePreview() abort
       let data.virt_text += annot
     endif
     let data.hl_mode = 'combine'
-    call nvim_buf_del_extmark(0, copilot#NvimNs(), 1)
-    call nvim_buf_set_extmark(0, copilot#NvimNs(), line('.')-1, col('.')-1, data)
     if uuid !=# get(s:, 'uuid', '')
       let s:uuid = uuid
       call copilot#Request('notifyShown', {'uuid': uuid})
@@ -471,7 +468,7 @@ function! s:Trigger(bufnr, timer) abort
     return
   endif
   if exists('s:auth_request')
-    let g:_copilot_timer = timer_start(100, function('s:Trigger', [a:bufnr]))
+    let g:_copilot_timer = timer_start(50, function('s:Trigger', [a:bufnr]))
     return
   endif
   call copilot#Complete(function('s:HandleTriggerResult'), function('s:HandleTriggerResult'))
@@ -488,7 +485,7 @@ function! copilot#Schedule(...) abort
   if !s:is_mapped || !s:dest || !copilot#Enabled()
     return
   endif
-  let delay = a:0 ? a:1 : get(g:, 'copilot_idle_delay', 75)
+  let delay = a:0 ? a:1 : get(g:, 'copilot_idle_delay', 50)
   let g:_copilot_timer = timer_start(delay, function('s:Trigger', [bufnr('')]))
 endfunction
 

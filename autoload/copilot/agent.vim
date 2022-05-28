@@ -300,16 +300,16 @@ function! s:Command() abort
   endif
   let node_version = matchstr(join(out, ''), '^v\zs\d\+\.[^[:space:]]*')
   let major = str2nr(node_version)
-  let too_new = major >= 18 && node_version !=# '18.0.0'
-  if !get(g:, 'copilot_ignore_node_version')
-    if major == 0
-      return [v:null, 'Could not determine Node.js version']
-    elseif (major < 16 || too_new) && s:IsArmMacOS()
-      return [v:null, 'Node.js version 16.x or 17.x required on Apple Silicon but found ' . node_version]
-    elseif major < 12 || too_new
-      return [v:null, 'Node.js version 12.x–17.x required but found ' . node_version]
-    endif
-  endif
+  " let too_new = major >= 18 && node_version !=# '18.0.0'
+  " if !get(g:, 'copilot_ignore_node_version')
+  "   if major == 0
+  "     return [v:null, 'Could not determine Node.js version']
+  "   elseif (major < 16 || too_new) && s:IsArmMacOS()
+  "     return [v:null, 'Node.js version 16.x or 17.x required on Apple Silicon but found ' . node_version]
+  "   elseif major < 12 || too_new
+  "     return [v:null, 'Node.js version 12.x–17.x required but found ' . node_version]
+  "   endif
+  " endif
   let agent = s:root . '/copilot/dist/agent.js'
   if !filereadable(agent)
     let agent = get(g:, 'copilot_agent_command', '')
